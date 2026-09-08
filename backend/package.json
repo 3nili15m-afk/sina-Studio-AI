@@ -1,0 +1,68 @@
+{
+  "name": "ai-platform-backend",
+  "version": "1.0.0",
+  "description": "Unified AI content creation platform backend",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "type-check": "tsc --noEmit",
+    "validate": "npm run type-check && npm run lint && npm run test"
+  },
+  "keywords": [
+    "ai",
+    "content-creation",
+    "image-generation",
+    "video-generation",
+    "game-creation"
+  ],
+  "author": "AI Platform Team",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^8.0.0",
+    "redis": "^4.6.0",
+    "bull": "^4.11.0",
+    "zod": "^3.22.0",
+    "dotenv": "^16.3.1",
+    "winston": "^3.11.0",
+    "jsonwebtoken": "^9.1.0",
+    "bcryptjs": "^2.4.3",
+    "axios": "^1.6.0",
+    "uuid": "^9.0.0",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.0",
+    "compression": "^1.7.4",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.10.0",
+    "@types/jest": "^29.5.0",
+    "@types/jsonwebtoken": "^9.0.0",
+    "@types/bcryptjs": "^2.4.2",
+    "@types/uuid": "^9.0.0",
+    "@types/compression": "^1.7.2",
+    "@types/morgan": "^1.9.5",
+    "typescript": "^5.3.0",
+    "ts-node-dev": "^2.0.0",
+    "ts-node": "^10.9.0",
+    "eslint": "^8.54.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.0",
+    "supertest": "^6.3.0",
+    "@types/supertest": "^6.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

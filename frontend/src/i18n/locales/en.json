@@ -1,0 +1,65 @@
+{
+  "app": {
+    "title": "AI Creation Studio",
+    "subtitle": "Create amazing content with AI"
+  },
+  "nav": {
+    "home": "Home",
+    "create": "Create",
+    "projects": "Projects",
+    "jobs": "Tasks",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "pages": {
+    "dashboard": "Dashboard",
+    "studio": "Creation Studio",
+    "projects": "My Projects",
+    "jobs": "Job Queue",
+    "settings": "Settings"
+  },
+  "creation": {
+    "whatToCreate": "What do you want to create?",
+    "selectType": "Select content type",
+    "image": "Image",
+    "video": "Video",
+    "audio": "Audio",
+    "text": "Text",
+    "game": "Game",
+    "character": "Character",
+    "asset3d": "3D Asset",
+    "describe": "Describe what you want to create...",
+    "generate": "Generate",
+    "cancel": "Cancel"
+  },
+  "job": {
+    "status": "Status",
+    "pending": "Pending",
+    "processing": "Processing",
+    "completed": "Completed",
+    "failed": "Failed",
+    "progress": "Progress",
+    "created": "Created",
+    "download": "Download"
+  },
+  "auth": {
+    "login": "Sign In",
+    "signup": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "username": "Username",
+    "remember": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "save": "Save",
+    "delete": "Delete",
+    "close": "Close",
+    "retry": "Retry"
+  }
+}

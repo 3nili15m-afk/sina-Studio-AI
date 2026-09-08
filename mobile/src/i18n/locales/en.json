@@ -1,0 +1,12 @@
+{
+  "app": {
+    "title": "AI Creator",
+    "subtitle": "Create amazing content"
+  },
+  "creation": {
+    "whatToCreate": "What do you want to create?",
+    "image": "Image",
+    "video": "Video",
+    "game": "Game"
+  }
+}
