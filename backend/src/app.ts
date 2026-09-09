@@ -12,6 +12,7 @@ import authRoutes from './api/routes/auth';
 import jobRoutes from './api/routes/jobs';
 import userRoutes from './api/routes/users';
 import projectRoutes from './api/routes/projects';
+import generateRoutes from './api/routes/generate';
 
 const app: Express = express();
 
@@ -62,6 +63,7 @@ app.use(`${config.apiPrefix}/${config.apiVersion}/auth`, authRoutes);
 app.use(`${config.apiPrefix}/${config.apiVersion}/jobs`, jobRoutes);
 app.use(`${config.apiPrefix}/${config.apiVersion}/users`, userRoutes);
 app.use(`${config.apiPrefix}/${config.apiVersion}/projects`, projectRoutes);
+app.use(`${config.apiPrefix}/${config.apiVersion}/generate`, generateRoutes);
 
 // 404 handler
 app.use((req: Request, res: Response) => {
