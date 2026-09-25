@@ -14,74 +14,54 @@ class APIClient {
   constructor() {
     this.client = axios.create({
       baseURL: API_URL,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
     });
 
-    // Add auth token to requests
-    this.client.interceptors.request.use((config) => {
-      if (this.token) {
-        config.headers.Authorization = `Bearer ${this.token}`;
-      }
-      return config;
+    this.client.interceptors.request.use((request) => {
+      if (this.token) request.headers.Authorization = `Bearer ${this.token}`;
+      return request;
     });
 
-    // Load token from localStorage
     const savedToken = localStorage.getItem('authToken');
-    if (savedToken) {
-      this.token = savedToken;
-    }
+    if (savedToken) this.token = savedToken;
   }
 
-  /**
-   * Set authentication token
-   */
   setToken(token: string): void {
     this.token = token;
     localStorage.setItem('authToken', token);
   }
 
-  /**
-   * Clear authentication token
-   */
   clearToken(): void {
     this.token = null;
     localStorage.removeItem('authToken');
   }
 
-  /**
-   * Health check
-   */
-  async healthCheck(): Promise<any> {
-    return this.client.get('/v1/health');
+  async healthCheck(): Promise<APIResponse<unknown>> {
+    const response = await this.client.get('/v1/health');
+    return response.data;
   }
 
-  /**
-   * Create a new job
-   */
   async createJob(jobData: {
     type: string;
-    input: Record<string, any>;
+    input: Record<string, unknown>;
     priority?: string;
-  }): Promise<APIResponse<any>> {
+  }): Promise<APIResponse<Job>> {
     const response = await this.client.post('/v1/jobs', jobData);
     return response.data;
   }
 
-  /**
-   * Get job status
-   */
-  async getJobStatus(jobId: string): Promise<APIResponse<Job>> {
-    const response = await this.client.get(`/v1/jobs/${jobId}`);
+  async listJobs(): Promise<APIResponse<Job[]>> {
+    const response = await this.client.get('/v1/jobs');
     return response.data;
   }
 
-  /**
-   * Cancel a job
-   */
-  async cancelJob(jobId: string): Promise<APIResponse<any>> {
-    const response = await this.client.post(`/v1/jobs/${jobId}/cancel`);
+  async getJobStatus(jobId: string): Promise<APIResponse<Job>> {
+    const response = await this.client.get(`/v1/jobs/${encodeURIComponent(jobId)}`);
+    return response.data;
+  }
+
+  async cancelJob(jobId: string): Promise<APIResponse<Job>> {
+    const response = await this.client.post(`/v1/jobs/${encodeURIComponent(jobId)}/cancel`);
     return response.data;
   }
 }
