@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, Box, Button, Chip, CircularProgress, Container, List, ListItem, ListItemText, Typography } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Box, Typography, Chip, LinearProgress, Alert } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import api from '../services/api';
+import apiClient from '../services/api';
 import { Job } from '../types';
 
 const Jobs: React.FC = () => {
@@ -10,47 +10,116 @@ const Jobs: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadJobs = useCallback(async () => {
-    setLoading(true);
+  useEffect(() => {
+    const loadJobs = async () => {
+      setLoading(true);
+      try {
+        const res = await apiClient.listJobs();
+        if (res.success && res.data) {
+          setJobs(res.data);
+        }
+      } catch (err: any) {
+        setError(err.response?.data?.error?.message || 'Failed to load jobs');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadJobs();
+    const interval = setInterval(loadJobs, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleCancel = async (jobId: string) => {
     try {
-      const response = await api.listJobs();
-      if (!response.success || !response.data) throw new Error(response.error?.message || t('common.error'));
-      setJobs(response.data);
-      setError(null);
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : t('common.error'));
-    } finally {
-      setLoading(false);
+      await apiClient.cancelJob(jobId);
+      setJobs(jobs.map((j) => (j.id === jobId ? { ...j, status: 'cancelled' } : j)));
+    } catch (err: any) {
+      setError(err.response?.data?.error?.message || 'Failed to cancel job');
     }
-  }, [t]);
+  };
 
-  useEffect(() => { void loadJobs(); }, [loadJobs]);
-
-  const cancel = async (jobId: string) => {
-    try {
-      await api.cancelJob(jobId);
-      await loadJobs();
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : t('common.error'));
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return 'success';
+      case 'failed':
+        return 'error';
+      case 'processing':
+        return 'info';
+      case 'cancelled':
+        return 'warning';
+      default:
+        return 'default';
     }
   };
 
   return (
-    <Container maxWidth="lg">
-      <Box sx={{ py: 4 }}>
-        <Typography variant="h3" component="h1" gutterBottom>{t('pages.jobs')}</Typography>
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-        {loading ? <CircularProgress /> : jobs.length === 0 ? <Typography color="text.secondary">{t('common.noJobs')}</Typography> : (
-          <List>
-            {jobs.map((job) => (
-              <ListItem key={job.id} divider secondaryAction={job.status === 'pending' || job.status === 'queued' || job.status === 'processing' ? <Button onClick={() => void cancel(job.id)}>{t('creation.cancel')}</Button> : undefined}>
-                <ListItemText primary={job.type} secondary={new Date(job.createdAt).toLocaleString()} />
-                <Chip label={t(`job.${job.status}`, { defaultValue: job.status })} sx={{ mr: 2 }} />
-              </ListItem>
-            ))}
-          </List>
-        )}
-      </Box>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Typography variant="h3" gutterBottom>
+        {t('pages.jobs')}
+      </Typography>
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {loading ? (
+        <LinearProgress />
+      ) : jobs.length === 0 ? (
+        <Paper sx={{ p: 3, textAlign: 'center' }}>
+          <Typography color="textSecondary">No jobs yet</Typography>
+        </Paper>
+      ) : (
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                <TableCell>{t('job.status')}</TableCell>
+                <TableCell>Type</TableCell>
+                <TableCell>{t('job.progress')}</TableCell>
+                <TableCell>{t('job.created')}</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {jobs.map((job) => (
+                <TableRow key={job.id}>
+                  <TableCell>
+                    <Chip
+                      label={job.status}
+                      color={getStatusColor(job.status) as any}
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell>{job.type}</TableCell>
+                  <TableCell>
+                    {job.progress && (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <LinearProgress
+                          variant="determinate"
+                          value={job.progress.percentage}
+                          sx={{ flex: 1 }}
+                        />
+                        <Typography variant="body2">{job.progress.percentage}%</Typography>
+                      </Box>
+                    )}
+                  </TableCell>
+                  <TableCell>{new Date(job.createdAt).toLocaleString()}</TableCell>
+                  <TableCell>
+                    {['processing', 'pending', 'queued'].includes(job.status) && (
+                      <Button size="small" color="error" onClick={() => handleCancel(job.id)}>
+                        {t('common.close')}
+                      </Button>
+                    )}
+                    {job.status === 'completed' && job.result?.contentUrl && (
+                      <Button size="small" href={job.result.contentUrl} target="_blank">
+                        {t('job.download')}
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
     </Container>
   );
 };

@@ -1,16 +1,9 @@
-/**
- * Type definitions for frontend
- */
-
 export interface User {
   id: string;
   email: string;
   username: string;
   role: 'user' | 'admin' | 'moderator';
-  preferences: {
-    language: 'en' | 'fa';
-    theme: 'light' | 'dark';
-  };
+  preferences: { language: 'en' | 'fa'; theme: 'light' | 'dark' };
 }
 
 export interface Job {
@@ -20,19 +13,9 @@ export interface Job {
   priority: 'low' | 'normal' | 'high';
   input: Record<string, any>;
   output?: Record<string, any>;
-  result?: {
-    contentUrl: string;
-    format: string;
-    size?: number;
-  };
-  error?: {
-    code: string;
-    message: string;
-  };
-  progress?: {
-    percentage: number;
-    stage: string;
-  };
+  result?: { contentUrl: string; format: string; size?: number; duration?: number };
+  error?: { code: string; message: string };
+  progress?: { percentage: number; stage: string };
   createdAt: string;
   updatedAt: string;
 }
@@ -60,10 +43,7 @@ export interface Content {
 export interface APIResponse<T> {
   success: boolean;
   data?: T;
-  error?: {
-    code: string;
-    message: string;
-  };
+  error?: { code: string; message: string };
   timestamp: string;
   requestId: string;
 }
